@@ -85,7 +85,7 @@ def pretrained_step(mode = None):
     
     wandb.finish()
     
-    return swin_backbone 
+    torch.save(swin_backbone.state_dict(),"./checkpoints/swin_encoder.pt")
 
 def train(feature_exe):
     
@@ -127,9 +127,15 @@ def train(feature_exe):
     # build model ------------------------------------------
     encoder_conv = build_convnext(device, "./checkpoints/convnext_base_1k_224.pth")
     
+    
+    if feature_exe:
+        swin_backbone = build_swin(device,None)
+        state_dict = torch.load(feature_exe)
+        swin_backbone.load(state_dict)
+    
     memoryBank = build_memoryBank(device, memory_dataset, 30)
-    memoryBank.update(feature_exe)
-    del feature_exe
+    memoryBank.update(swin_backbone)
+    del swin_backbone
     
     promote_encoder = build_proEncoder(device= device, channel_list=[128, 256, 512], size_list=[64, 32, 16])
     internal_model = MSFF().to(device)
