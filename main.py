@@ -2,7 +2,7 @@ from tools import wandb_init,setup_default_logging
 from dataset import build_dataset, build_dataLoader
 from model import build_swin,  build_pretrained, build_resnetDecoder, build_convnext, build_memoryBank, build_Decoder, build_proEncoder, MSFF,Main_model
 from train import pretrained_train, train_step
-
+import wandb
 import os
 from config import cfg
 import logging
@@ -26,11 +26,17 @@ use_wandb = train_cfg_main['use_wandb']
 
 def pretrained_step(mode = None):
     
+    # TODO
+    current_time = datetime.datetime.now()
+    tail = str(current_time.day)+"_"+str(current_time.hour)
+    
     # logging and init ------------------------------------------
     
     if use_wandb:
-        wandb_init("test", "test_pretrained", cfg = train_cfg_main['pretrain'])
-    
+        if mode == "test":
+            wandb_init("test", "test_pretrained_test"+tail, cfg = train_cfg_main['pretrain'])
+        else:
+            wandb_init("test", "test_pretrained"+tail, cfg = train_cfg_main['pretrain'])
     # dataset ---------------------------------------------------
     
     pretrained_dataset = build_dataset(
@@ -54,8 +60,7 @@ def pretrained_step(mode = None):
     
     pretrained_model = build_pretrained(swin_backbone, resnet_decoder, device)
     
-    # TODO
-    current_time = datetime.datetime.now()
+
 
     if mode == "test":   
         time_str = ""+ str(current_time.month) + "_"+ str(current_time.day)+ "_"+ str(current_time.hour)
@@ -78,11 +83,18 @@ def pretrained_step(mode = None):
         savedir=trace_dir,
         use_wandb=use_wandb)
     
+    wandb.finish()
+    
     return swin_backbone 
 
 def train(feature_exe):
+    
+    
+    current_time = datetime.datetime.now()
+    tail = str(current_time.day)+"_"+str(current_time.hour)
+    
     if use_wandb:
-        wandb_init("test", "test_train", train_cfg_main['train'])
+        wandb_init("test", "test_train_"+tail, train_cfg_main['train'])
     
     
     # build dataset ------------------------------------------
@@ -137,6 +149,7 @@ def train(feature_exe):
         use_wandb=use_wandb,
         savedir="./save/"+dataset_cfg['target']
     )
+    wandb.finish()
     
     
 
@@ -144,12 +157,6 @@ def train(feature_exe):
 if __name__ == "__main__":
     
 
-    
-#    for i in range(50):
-#
-#        if use_wandb:
-#            wandb_init("test", "test_pretrained"+str(i), cfg = train_cfg_main['pretrain'])
-#        pretrained_step(mode="test")
     
     feature_exe = pretrained_step()
     train(feature_exe=feature_exe)
