@@ -1,0 +1,7 @@
+checkpoints
+tt*.py
+tt*.ipynb
+**/__pycache__
+.vscode
+wandb
+tracing*

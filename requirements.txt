@@ -1,0 +1,7 @@
+matplotlib
+einops==0.6.1
+anomalib==0.7.0
+timm==0.6.12
+wandb
+opencv-python==4.8.0.74
+imgaug
