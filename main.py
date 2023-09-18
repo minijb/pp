@@ -164,5 +164,5 @@ if __name__ == "__main__":
     
 
     
-    feature_exe = pretrained_step()
-    train(feature_exe=feature_exe)
+    pretrained_step()
+    train(feature_exe="./checkpoints/swin_encoder.pt")
