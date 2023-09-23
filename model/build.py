@@ -3,7 +3,7 @@ from .swinTransformer import SwinTransformer
 from .ConvNext import ConvNeXt
 from .memorybank import MemoryBank
 from .decoder import TwoWayDecoder,TwoWayTransformer,Resnet_decoder
-from .promot_encoder import Promot_encoder
+from .promote import Promot_encoder
 from .pretrained_model import Pretrained
 
 from tools import update_stateDict

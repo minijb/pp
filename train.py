@@ -160,7 +160,8 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
                 'lr': optimizer.param_groups[0]['lr'],
                 "loss" : loss_tracing.val
             }, step = step)
-        if (step+1) % log_interval == 0 or step == 0: 
+        #TODO
+        if (step+1) % 1 == 0 or step == 0: 
             _logger.info('TRAIN [{:>4d}/{}] '
                     'Loss: {loss.val:>6.4f} ({loss.avg:>6.4f}) '
                     'LR: {lr:.3e} '.format(
@@ -168,7 +169,7 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
                     loss       = loss_tracing, 
                     lr         = optimizer.param_groups[0]['lr'])
                     )
-        if ((step+1) % eval_interval == 0 and step != 0) or (step+1) == num_training_steps: 
+        if ((step+1) % 1 == 0 and step != 0) or (step+1) == num_training_steps: 
             eval_metrics = evaluate(
                 model        = model, 
                 dataloader   = validloader, 
@@ -233,7 +234,7 @@ def evaluate(model, dataloader, criterion, log_interval, metrics: list, device: 
                 target = targets.cpu()
             )
             auroc_pixel_metric.update(
-                    preds  = outputs[:,1,:].cpu(),
+                preds  = outputs[:,1,:].cpu(),
                 target = masks.cpu()
             )
             aupro_pixel_metric.update(

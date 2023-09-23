@@ -1,6 +1,7 @@
 from tools import wandb_init,setup_default_logging
 from dataset import build_dataset, build_dataLoader
 from model import build_swin,  build_pretrained, build_resnetDecoder, build_convnext, build_memoryBank, build_Decoder, build_proEncoder, MSFF,Main_model
+from model import Swin_promte, internal, Swin_decoder,Main_model_swin
 from train import pretrained_train, train_step
 import wandb
 import os
@@ -18,7 +19,7 @@ train_cfg = cfg['train']['train']
 _logger = logging.getLogger('train')
 
 setup_default_logging()
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 device = torch.device("cuda:0")
 #device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
 _logger.info('Device: {}'.format(device))
@@ -125,25 +126,32 @@ def train(feature_exe):
     )
     
     # build model ------------------------------------------
-    encoder_conv = build_convnext(device, "./checkpoints/convnext_base_1k_224.pth")
+    # encoder_conv = build_convnext(device, "./checkpoints/convnext_base_1k_224.pth")
     
     
     if feature_exe:
         swin_backbone = build_swin(device,None)
         state_dict = torch.load(feature_exe)
-        swin_backbone.load(state_dict)
+        swin_backbone.load_state_dict(state_dict)
     
     memoryBank = build_memoryBank(device, memory_dataset, 30)
     memoryBank.update(swin_backbone)
-    del swin_backbone
+   
+    channel_list = [256, 512, 1024]
+    ss_list = [32, 16, 8]
+    promte_mode = Swin_promte(channel_list, ss_list)
+    promte_mode.to(device)
     
-    promote_encoder = build_proEncoder(device= device, channel_list=[128, 256, 512], size_list=[64, 32, 16])
-    internal_model = MSFF().to(device)
+    internal_model = internal(channel_list[0:-1])
+    internal_model.to(device)
     
-    decoder = build_Decoder(device,"./checkpoints/sam_vit_h_4b8939.pth")
+    decoder = Swin_decoder()
+    decoder.to(device)
     
-    main_model = Main_model(encoder_conv,internal_model, decoder, promote_encoder, memoryBank)
-
+    main_model = Main_model_swin(feature_exe, promte_mode, memoryBank, internal_model, decoder)
+    main_model.to(device)
+    
+    
     train_step(
         model=main_model,
         dataloader=trainloader,
@@ -157,12 +165,20 @@ def train(feature_exe):
     )
     wandb.finish()
     
+
+# def delete():
+#     promote_encoder = build_proEncoder(device= device, channel_list=[128, 256, 512], size_list=[64, 32, 16])
+#     internal_model = MSFF().to(device)
     
+#     decoder = build_Decoder(device,"./checkpoints/sam_vit_h_4b8939.pth")
+    
+#     main_model = Main_model(feature_exe,internal_model, decoder, promote_encoder, memoryBank)
+
 
     
 if __name__ == "__main__":
     
 
     
-    pretrained_step()
+    # pretrained_step()
     train(feature_exe="./checkpoints/swin_encoder.pt")
