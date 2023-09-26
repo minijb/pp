@@ -95,7 +95,7 @@ def train(feature_exe):
     tail = str(current_time.day)+"_"+str(current_time.hour)
     
     if use_wandb:
-        wandb_init("test", "test_train_"+tail, train_cfg_main['train'])
+        wandb_init("test_swin_train", "test_train_swin_"+tail, train_cfg_main['train'])
     
     
     # build dataset ------------------------------------------
@@ -126,16 +126,17 @@ def train(feature_exe):
     )
     
     # build model ------------------------------------------
-    # encoder_conv = build_convnext(device, "./checkpoints/convnext_base_1k_224.pth")
+    encoder_conv = build_convnext(device, "./checkpoints/convnext_base_1k_224.pth")
     
     
-    if feature_exe:
-        swin_backbone = build_swin(device,None)
-        state_dict = torch.load(feature_exe)
-        swin_backbone.load_state_dict(state_dict)
+    # if feature_exe:
+    #     swin_backbone = build_swin(device,None)
+    #     state_dict = torch.load(feature_exe)
+    #     swin_backbone.load_state_dict(state_dict)
+    
     
     memoryBank = build_memoryBank(device, memory_dataset, 30)
-    memoryBank.update(swin_backbone)
+    memoryBank.update(encoder_conv)
    
     channel_list = [256, 512, 1024]
     ss_list = [32, 16, 8]
@@ -148,7 +149,7 @@ def train(feature_exe):
     decoder = Swin_decoder()
     decoder.to(device)
     
-    main_model = Main_model_swin(feature_exe, promte_mode, memoryBank, internal_model, decoder)
+    main_model = Main_model_swin(encoder_conv, promte_mode, memoryBank, internal_model, decoder)
     main_model.to(device)
     
     

@@ -5,3 +5,4 @@ tt*.ipynb
 .vscode
 wandb
 tracing*
+save

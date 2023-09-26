@@ -5,7 +5,7 @@ from optimzer import AdamW
 from config import cfg
 from loss import FocalLoss
 from timm.scheduler.cosine_lr import CosineLRScheduler
-
+import wandb
 
 
 from anomalib.utils.metrics import AUPRO, AUROC
@@ -160,8 +160,8 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
                 'lr': optimizer.param_groups[0]['lr'],
                 "loss" : loss_tracing.val
             }, step = step)
-        #TODO
-        if (step+1) % 1 == 0 or step == 0: 
+        
+        if (step+1) % log_interval == 0 or step == 0: 
             _logger.info('TRAIN [{:>4d}/{}] '
                     'Loss: {loss.val:>6.4f} ({loss.avg:>6.4f}) '
                     'LR: {lr:.3e} '.format(
@@ -169,7 +169,7 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
                     loss       = loss_tracing, 
                     lr         = optimizer.param_groups[0]['lr'])
                     )
-        if ((step+1) % 1 == 0 and step != 0) or (step+1) == num_training_steps: 
+        if ((step+1) % eval_interval == 0 and step != 0) or (step+1) == num_training_steps: 
             eval_metrics = evaluate(
                 model        = model, 
                 dataloader   = validloader, 
@@ -180,7 +180,8 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
             )
             model.train()
             eval_log = dict([(f'eval_{k}', v) for k, v in eval_metrics.items()])
-
+            if use_wandb:
+                wandb.log(eval_log, step=step)
             if best_score < np.mean(list(eval_metrics.values())):
                 # save best score
                 state = {'best_step':step}

@@ -20,5 +20,5 @@ trian = {
             "cycle_decay" : 0.8
         }
     },
-    "use_wandb" : False 
+    "use_wandb" : True 
 }
