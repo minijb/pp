@@ -38,15 +38,16 @@ class Main_model_swin(nn.Module):
     def forward(self, input):
         features_list = list(self.encoder(input))
         
-        dis_list  = self.memorybank.select(features_list[0:-1])
+        dis_list  = self.memorybank.select(features_list[1:-1])
         dis_list.append(features_list[-1])
         
         promote = self.promote(dis_list[1:])
         
-        promote = self.internal_model(features_list[1:-1], promote)
+        promote = self.internal_model(features_list[2:-1], promote)
         
         to_decoder = []
         to_decoder.append(features_list[0])
+        to_decoder.append(features_list[1])
         to_decoder.extend(promote)
         to_decoder.append(features_list[-1])
         

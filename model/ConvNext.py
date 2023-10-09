@@ -72,11 +72,16 @@ class ConvNeXt(nn.Module):
         super().__init__()
 
         self.downsample_layers = nn.ModuleList() # stem and 3 intermediate downsampling conv layers
-        stem = nn.Sequential(
-            nn.Conv2d(in_chans, dims[0], kernel_size=4, stride=4),
+        self.stem1 = nn.Sequential(
+            nn.Conv2d(in_chans, dims[0], kernel_size=2, stride=2),
             LayerNorm(dims[0], eps=1e-6, data_format="channels_first")
         )
-        self.downsample_layers.append(stem)
+        stem2 = nn.Sequential(
+            nn.Conv2d(dims[0], dims[0], kernel_size=2, stride=2),
+            LayerNorm(dims[0], eps=1e-6, data_format="channels_first")
+        )
+        self.downsample_layers.append(stem2)
+        
         for i in range(3):
             downsample_layer = nn.Sequential(
                     LayerNorm(dims[i], eps=1e-6, data_format="channels_first"),
@@ -112,6 +117,8 @@ class ConvNeXt(nn.Module):
 
     def forward_features(self, x):
         outs = []
+        x = self.stem1(x)
+        outs.append(x)
         for i in range(4):
             x = self.downsample_layers[i](x)
             x = self.stages[i](x)
