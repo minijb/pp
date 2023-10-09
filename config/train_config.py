@@ -1,4 +1,4 @@
-num_step = 50000
+num_step = 5000
 
 trian = {
     "pretrain" : {
