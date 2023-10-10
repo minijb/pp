@@ -112,7 +112,7 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
     criterion = [smooth_l1_loss, focal_loss] 
     
     # optimizer
-    optimizer = AdamW(model.parameters(), lr  = train_cfg['lr'])
+    optimizer = AdamW(model.parameters(), lr  = train_cfg['lr'], eps=1e-4)
     
     scheduler_cfg = train_cfg['scheduler']
     scheduler = CosineLRScheduler(
