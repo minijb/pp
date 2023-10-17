@@ -32,7 +32,7 @@ def pretrained_step(mode = None):
     tail = str(current_time.day)+"_"+str(current_time.hour)
     
     # logging and init ------------------------------------------
-    
+
     if use_wandb:
         if mode == "test":
             wandb_init("test", "test_pretrained_test"+tail, cfg = train_cfg_main['pretrain'])

@@ -154,55 +154,59 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
             optimizer.zero_grad()
             
             loss_tracing.update(loss.item())
+            if np.isnan(loss_tracing.val):
+                print("focal_loss : ",focal_loss_c.item())
+                print("smooth_loss : ",smooth_loss_c.item())
+                return
             
-        if use_wandb:
-            wandb_log_train({
-                'lr': optimizer.param_groups[0]['lr'],
-                "loss" : loss_tracing.val
-            }, step = step)
-        
-        if (step+1) % log_interval == 0 or step == 0: 
-            _logger.info('TRAIN [{:>4d}/{}] '
-                    'Loss: {loss.val:>6.4f} ({loss.avg:>6.4f}) '
-                    'LR: {lr:.3e} '.format(
-                    step+1, num_training_steps, 
-                    loss       = loss_tracing, 
-                    lr         = optimizer.param_groups[0]['lr'])
-                    )
-        if ((step+1) % eval_interval == 0 and step != 0) or (step+1) == num_training_steps: 
-            eval_metrics = evaluate(
-                model        = model, 
-                dataloader   = validloader, 
-                criterion    = criterion, 
-                log_interval = log_interval,
-                metrics      = [auroc_image_metric, auroc_pixel_metric, aupro_pixel_metric], 
-                device       = device
-            )
-            model.train()
-            eval_log = dict([(f'eval_{k}', v) for k, v in eval_metrics.items()])
             if use_wandb:
-                wandb.log(eval_log, step=step)
-            if best_score < np.mean(list(eval_metrics.values())):
-                # save best score
-                state = {'best_step':step}
-                state.update(eval_log)
-                json.dump(state, open(os.path.join(savedir, 'best_score.json'),'w'), indent='\t')
-
-                # save best model
-                torch.save(model.state_dict(), os.path.join(savedir, f'best_model.pt'))
-                
-                _logger.info('Best Score {0:.3%} to {1:.3%}'.format(best_score, np.mean(list(eval_metrics.values()))))
-
-                best_score = np.mean(list(eval_metrics.values()))
-    
-        if scheduler:
-            scheduler.step(step+1)
+                wandb_log_train({
+                    'lr': optimizer.param_groups[0]['lr'],
+                    "loss" : loss_tracing.val
+                }, step = step)
             
-        step += 1
+            if (step+1) % log_interval == 0 or step == 0: 
+                _logger.info('TRAIN [{:>4d}/{}] '
+                        'Loss: {loss.val:>6.4f} ({loss.avg:>6.4f}) '
+                        'LR: {lr:.3e} '.format(
+                        step+1, num_training_steps, 
+                        loss       = loss_tracing, 
+                        lr         = optimizer.param_groups[0]['lr'])
+                        )
+            if ((step+1) % eval_interval == 0 and step != 0) or (step+1) == num_training_steps: 
+                eval_metrics = evaluate(
+                    model        = model, 
+                    dataloader   = validloader, 
+                    criterion    = criterion, 
+                    log_interval = log_interval,
+                    metrics      = [auroc_image_metric, auroc_pixel_metric, aupro_pixel_metric], 
+                    device       = device
+                )
+                model.train()
+                eval_log = dict([(f'eval_{k}', v) for k, v in eval_metrics.items()])
+                if use_wandb:
+                    wandb.log(eval_log, step=step)
+                if best_score < np.mean(list(eval_metrics.values())):
+                    # save best score
+                    state = {'best_step':step}
+                    state.update(eval_log)
+                    json.dump(state, open(os.path.join(savedir, 'best_score.json'),'w'), indent='\t')
+
+                    # save best model
+                    torch.save(model.state_dict(), os.path.join(savedir, f'best_model.pt'))
+                    
+                    _logger.info('Best Score {0:.3%} to {1:.3%}'.format(best_score, np.mean(list(eval_metrics.values()))))
+
+                    best_score = np.mean(list(eval_metrics.values()))
         
-        if step == num_training_steps:
-            train_mode = False
-            break
+            if scheduler:
+                scheduler.step(step+1)
+                
+            step += 1
+        
+            if step == num_training_steps:
+                train_mode = False
+                break
         
     _logger.info('Best Metric: {0:.3%} (step {1:})'.format(best_score, state['best_step']))
     torch.save(model.state_dict(), os.path.join(savedir, f'latest_model.pt'))

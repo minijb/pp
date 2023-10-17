@@ -18,7 +18,7 @@ def build_dataset(datadir:str, texturedir:str, target:str, train:bool=True, to_m
     )
     return dataset
 
-def build_dataLoader(dataset, train: bool, batch_size: int = 4, num_workers: int = 1):
+def build_dataLoader(dataset, train: bool, batch_size: int = 6, num_workers: int = 1):
     dataloader = DataLoader(
         dataset,
         shuffle     = train,
