@@ -1,4 +1,4 @@
-num_step = 50000
+num_step = 5000
 
 trian = {
     "pretrain" : {
@@ -9,15 +9,13 @@ trian = {
     "train" : {
         "focal_gamma": 4,
         "focal_alpha" : None,
-        "lr" : 0.003,
+        "lr" : 0.002,
         "num_step" : num_step,
         "scheduler": {
-            "t_initial": num_step//3,
+            "t_initial": num_step,
             "lr_min": 0.0001,
             "warmup_lr_init" : 0.0007,
-            "warmup_t": num_step//5,
-            "cycle_limit" : num_step//3+1,
-            "cycle_decay" : 0.8
+            "warmup_t": num_step//4,
         }
     },
     "use_wandb" : True 
