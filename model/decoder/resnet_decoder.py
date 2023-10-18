@@ -17,36 +17,32 @@ class UpConvBlock(nn.Module):
 
 
 
-#[torch.Size([10, 128, 64, 64]), 
-# torch.Size([10, 256, 32, 32]), 
-# torch.Size([10, 512, 16, 16]), 
-# torch.Size([10, 1024, 8, 8])]
+# [torch.Size([10, 128, 128, 128]), torch.Size([10, 128, 64, 64]), torch.Size([10, 256, 32, 32]), torch.Size([10, 512, 16, 16]), torch.Size([10, 1024, 8, 8])]
 class Resnet_decoder(nn.Module):
     def __init__(self) -> None:
-        # 768 -> 384 , 384 + 384 = 768   16
-        # 768 -> 384 , 384 + 192 = 576   32
-        # 575 -> 288 , 288 + 96 = 384    64
+    
         super().__init__()
-        self.upconv1 = UpConvBlock(1024, 512)
-        self.upconv2 = UpConvBlock(1024, 512)
-        self.upconv3 = UpConvBlock(768, 384)
-        self.upconv4 = UpConvBlock(512, 256)
+        self.upconv1 = UpConvBlock(1024, 512) #1024 --> 512
+        self.upconv2 = UpConvBlock(1024, 512) #1024 --> 512
+        self.upconv3 = UpConvBlock(768, 384) #512 + 256 = 768 --> 384
+        self.upconv4 = UpConvBlock(512, 256) # 384 + 128 = 512 --> 256 
 
-        self.upconv5 = UpConvBlock(256, 64)
+        self.upconv5 = UpConvBlock(384, 64) # 256 + 128 = 384
 
         self.final_conv = nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1)
 
     def forward(self, features):
-        x = self.upconv1(features[3])
-        x = torch.cat([x, features[2]], dim=1)
+        x = self.upconv1(features[4])
+        x = torch.cat([x, features[3]], dim=1)
 
         x = self.upconv2(x)
-        x = torch.cat([x, features[1]], dim=1)
+        x = torch.cat([x, features[2]], dim=1)
         
         x = self.upconv3(x)
-        x = torch.cat([x, features[0]], dim=1)
+        x = torch.cat([x, features[1]], dim=1)
         
         x = self.upconv4(x)
+        x = torch.cat([x, features[0]], dim=1)
         x = self.upconv5(x)
         
         x = self.final_conv(x)

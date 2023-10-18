@@ -25,20 +25,26 @@ device = torch.device("cuda:0")
 _logger.info('Device: {}'.format(device))
 use_wandb = train_cfg_main['use_wandb']
 
-def pretrained_step(mode = None):
+def pretrained_step(mode = None, target = None):
     
-    # TODO
+    
     current_time = datetime.datetime.now()
     tail = str(current_time.day)+"_"+str(current_time.hour)
     
     # logging and init ------------------------------------------
 
+    use_wandb = False
+    
     if use_wandb:
         if mode == "test":
             wandb_init("test", "test_pretrained_test"+tail, cfg = train_cfg_main['pretrain'])
         else:
-            wandb_init("test", "test_pretrained"+tail, cfg = train_cfg_main['pretrain'])
+            wandb_init("test", "pretrained"+target+tail, cfg = train_cfg_main['pretrain'])
     # dataset ---------------------------------------------------
+    
+    
+    if target : 
+        dataset_cfg['target'] = target
     
     pretrained_dataset = build_dataset(
         datadir = dataset_cfg['datadir'],
@@ -56,10 +62,11 @@ def pretrained_step(mode = None):
     
     # model ------------------------------------------------
     
-    swin_backbone = build_swin(device, "./checkpoints/upernet_swin_base_patch4_window7_512x512.pth")
+    # swin_backbone = build_swin(device, "./checkpoints/upernet_swin_base_patch4_window7_512x512.pth")
+    convnext = build_convnext(device, "./checkpoints/convnext_base_1k_224.pth")
     resnet_decoder = build_resnetDecoder(device)
     
-    pretrained_model = build_pretrained(swin_backbone, resnet_decoder, device)
+    pretrained_model = build_pretrained(convnext, resnet_decoder, device)
     
 
 
@@ -86,19 +93,23 @@ def pretrained_step(mode = None):
     
     wandb.finish()
     
-    torch.save(swin_backbone.state_dict(),"./checkpoints/swin_encoder.pt")
-
-def train(feature_exe):
+    torch.save(convnext.state_dict(),"./checkpoints/conv_encoder.pt")
+    use_wandb = True
+def train(feature_exe, target = None):
     
     
     current_time = datetime.datetime.now()
     tail = str(current_time.day)+"_"+str(current_time.hour)
     
     if use_wandb:
-        wandb_init("test_swin_train", "test_train_swin_"+tail, train_cfg_main['train'])
+        wandb_init("test_swin_train", "train_"+item+tail, train_cfg_main['train'])
     
     
     # build dataset ------------------------------------------
+    
+    if target : 
+        dataset_cfg['target'] = target
+        
     trian_dataset = build_dataset(
         **dataset_cfg,
         train=True
@@ -126,14 +137,7 @@ def train(feature_exe):
     )
     
     # build model ------------------------------------------
-    encoder_conv = build_convnext(device, "./checkpoints/convnext_base_1k_224.pth")
-    
-    
-    # if feature_exe:
-    #     swin_backbone = build_swin(device,None)
-    #     state_dict = torch.load(feature_exe)
-    #     swin_backbone.load_state_dict(state_dict)
-    
+    encoder_conv = build_convnext(device, "./checkpoints/conv_encoder.pt")
     
     memoryBank = build_memoryBank(device, memory_dataset, 30)
     memoryBank.update(encoder_conv)
@@ -179,7 +183,7 @@ def train(feature_exe):
     
 if __name__ == "__main__":
     
-
-    
-    # pretrained_step()
-    train(feature_exe="./checkpoints/swin_encoder.pt")
+    target_list = ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
+    for item in target_list:   
+        pretrained_step(target=item)
+        train(feature_exe="./checkpoints/swin_encoder.pt", target=item)
