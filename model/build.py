@@ -39,7 +39,7 @@ def build_convnext(device, pretrained: str):
         model_stateDict = model.state_dict()
         stateDict = update_stateDict(model_stateDict, torch.load(pretrained)['model']) 
         model_stateDict.update(stateDict)
-        if pretrained == "convnext_base_1k_224.pth":
+        if pretrained == "./checkpoints/convnext_base_1k_224.pth":
             del model_stateDict['downsample_layers.0.0.weight']
         model.load_state_dict(model_stateDict, strict=False)
 
