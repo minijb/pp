@@ -137,7 +137,7 @@ def train(feature_exe, target = None):
     )
     
     # build model ------------------------------------------
-    encoder_conv = build_convnext(device, "./checkpoints/conv_encoder.pt")
+    encoder_conv = build_convnext(device,  feature_exe)
     
     memoryBank = build_memoryBank(device, memory_dataset, 30)
     memoryBank.update(encoder_conv)
@@ -187,4 +187,4 @@ if __name__ == "__main__":
     # for item in target_list:   \
     item = "cable"
     pretrained_step(target=item)
-    train(feature_exe="./checkpoints/swin_encoder.pt", target=item)
+    train(feature_exe="./checkpoints/conv_encoder.pt", target=item)
