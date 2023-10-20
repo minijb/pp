@@ -183,7 +183,8 @@ def train(feature_exe, target = None):
     
 if __name__ == "__main__":
     
-    target_list = ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
-    for item in target_list:   
-        pretrained_step(target=item)
-        train(feature_exe="./checkpoints/swin_encoder.pt", target=item)
+    # target_list = ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
+    # for item in target_list:   \
+    item = "cable"
+    pretrained_step(target=item)
+    train(feature_exe="./checkpoints/swin_encoder.pt", target=item)
