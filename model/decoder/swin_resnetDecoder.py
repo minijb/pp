@@ -6,8 +6,8 @@ from ..mm import ResBlock
 
 
 # [torch.Size([10, 128, 64, 64]),
-#  torch.Size([10, 768, 32, 32]),
-#  torch.Size([10, 1024, 16, 16]),
+#  torch.Size([10, 512, 32, 32]),
+#  torch.Size([10, 512, 16, 16]),
 #  torch.Size([10, 1024, 8, 8])]
 
 class UpConvBlock(nn.Module):
@@ -29,9 +29,9 @@ class Swin_decoder(nn.ModuleList):
         super().__init__()
         
         self.upconv3 = UpConvBlock(1024, 512)
-        self.upconv2 = UpConvBlock(1536, 768)
-        self.upconv1 = UpConvBlock(1536, 768)
-        self.upconv0 = UpConvBlock(896, 256)
+        self.upconv2 = UpConvBlock(1024, 512)
+        self.upconv1 = UpConvBlock(1024, 512)
+        self.upconv0 = UpConvBlock(640, 256)
         self.upconv = UpConvBlock(256, 64)
 
         self.final_conv = nn.Conv2d(64, 2, kernel_size=3, stride=1, padding=1)

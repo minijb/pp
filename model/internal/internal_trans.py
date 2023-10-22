@@ -35,7 +35,7 @@ class internal(nn.Module):
             temp = temp[:,1:,:]
             bc, HW, ch = temp.shape
             temp = temp.permute(0, 2, 1).view(bc, ch, int(math.sqrt(HW)),int(math.sqrt(HW)))
-            temp = torch.cat([feature_map, temp], dim=1)
+            # temp = torch.cat([feature_map, temp], dim=1)
             
             f_map.append(temp)
             
