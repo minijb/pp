@@ -114,13 +114,11 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
     
     # optimizer
     optimizer = AdamW(model.parameters(), lr  = train_cfg['lr'])
+    sch_cfg = train_cfg['scheduler']
     scheduler = CosineAnnealingWarmupRestarts(
             optimizer, 
-            first_cycle_steps = 30000,
-            max_lr = 0.003,
-            min_lr = 0.0001,
-            warmup_steps   = int(30000  * 0.1)
-        )
+            **sch_cfg
+    )
      
     # tracing
     loss_tracing = AverageMeter()

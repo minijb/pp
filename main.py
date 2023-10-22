@@ -19,7 +19,7 @@ train_cfg = cfg['train']['train']
 _logger = logging.getLogger('train')
 
 setup_default_logging()
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+#os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 device = torch.device("cuda:0")
 #device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
 _logger.info('Device: {}'.format(device))
