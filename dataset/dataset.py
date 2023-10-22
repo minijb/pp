@@ -171,7 +171,7 @@ class MVTecDataset(Dataset):
         # invert mask for foreground mask
         target_foreground_mask = -(target_background_mask - 1)
         
-        return target_foreground_mask
+        return target_background_mask
     
     def generate_perlin_noise_mask(self) -> np.ndarray:
         # define perlin noise scale
