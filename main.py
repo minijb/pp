@@ -19,7 +19,7 @@ train_cfg = cfg['train']['train']
 _logger = logging.getLogger('train')
 
 setup_default_logging()
-# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 device = torch.device("cuda:0")
 #device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
 _logger.info('Device: {}'.format(device))
@@ -88,16 +88,17 @@ def pretrained_step(mode = None):
     
     torch.save(swin_backbone.state_dict(),"./checkpoints/swin_encoder.pt")
 
-def train(feature_exe):
+def train(feature_exe, item):
     
     
     current_time = datetime.datetime.now()
     tail = str(current_time.day)+"_"+str(current_time.hour)
     
     if use_wandb:
-        wandb_init("test_swin_train", "test_train_swin_"+tail, train_cfg_main['train'])
+        wandb_init("test_train", "train_"+item+tail, train_cfg_main['train'])
     
     
+    dataset_cfg['target'] = item
     # build dataset ------------------------------------------
     trian_dataset = build_dataset(
         **dataset_cfg,
@@ -159,7 +160,7 @@ def train(feature_exe):
         validloader=testloader,
         num_training_steps=train_cfg['num_step'],
         log_interval=1,
-        eval_interval= 50,
+        eval_interval= 200,
         device=device,
         use_wandb=use_wandb,
         savedir="./save/"+dataset_cfg['target']
@@ -182,4 +183,5 @@ if __name__ == "__main__":
 
     
     # pretrained_step()
-    train(feature_exe="./checkpoints/swin_encoder.pt")
+    item = 'cable'
+    train(feature_exe="./checkpoints/swin_encoder.pt", item = item )
