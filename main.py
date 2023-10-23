@@ -19,7 +19,7 @@ train_cfg = cfg['train']['train']
 _logger = logging.getLogger('train')
 
 setup_default_logging()
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+#os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 device = torch.device("cuda:0")
 #device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
 _logger.info('Device: {}'.format(device))
@@ -95,7 +95,7 @@ def train(feature_exe, item):
     tail = str(current_time.day)+"_"+str(current_time.hour)
     
     if use_wandb:
-        wandb_init("test_train", "train_"+item+tail, train_cfg_main['train'])
+        wandb_init("conv_train", "train_"+item+tail, train_cfg_main['train'])
     
     
     dataset_cfg['target'] = item
@@ -183,5 +183,5 @@ if __name__ == "__main__":
 
     
     # pretrained_step()
-    item = 'cable'
+    item = 'capsule'
     train(feature_exe="./checkpoints/swin_encoder.pt", item = item )
