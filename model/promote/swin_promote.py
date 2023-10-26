@@ -62,18 +62,18 @@ class liner_prom(nn.ModuleList):
         internal_size = in_size // 2
         
         if feature_shape == 8:
-            self.conv = nn.Sequential([
+            self.conv = nn.Sequential(
                 nn.Conv2d(in_size, internal_size, kernel_size = 3, stride = 1 , padding = 1, bias = False),
                 nn.Conv2d(internal_size, internal_size//4, kernel_size = 3, stride = 1 , padding = 1, bias = False)
-            ])
+            )
             internal_size = internal_size//4
             
             
         elif feature_shape == 16:
-            self.conv = nn.Sequential([
+            self.conv = nn.Sequential(
                 nn.Conv2d(in_size, internal_size, kernel_size = 2 , stride = 2 , bias =  False),
                 nn.Conv2d(internal_size, internal_size//2, kernel_size = 3, stride = 1 , padding = 1, bias = False)
-            ])
+            )
             internal_size = internal_size//2
             feature_shape = 8
         else:
