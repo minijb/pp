@@ -14,6 +14,13 @@ class internal(nn.Module):
             self.conv_list.append(conv_block(channel))
             
         self.trans_list = nn.ModuleList()
+        
+        scale = 512 ** -0.5
+        width = 512
+        self.positional_embeddings = [
+            nn.Parameter(scale * torch.randn((32 ) ** 2 + 1, width)),
+            nn.Parameter(scale * torch.randn((16 ) ** 2 + 1, width))
+        ]
         self.trans_list.append(Transformer(512, 3, 16))
         self.trans_list.append(Transformer(512, 4, 16))
 
@@ -29,6 +36,7 @@ class internal(nn.Module):
             temp = self.conv_list[i](feature_map)
             temp = mtt(temp)
             temp = torch.cat([promote_list[i], temp], dim=1)
+            temp = temp + self.positional_embeddings[i]
             temp = temp.permute(1, 0 ,2)
             temp = self.trans_list[i]( temp)
             temp = temp.permute(1, 0, 2)
