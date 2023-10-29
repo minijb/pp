@@ -17,25 +17,25 @@ class internal(nn.Module):
         
         scale = 512 ** -0.5
         width = 512
-        self.p1 = nn.Parameter(scale * torch.randn((32 ) ** 2 + 1, width)),
+        self.p1 = nn.Parameter(scale * torch.randn((32 ) ** 2 + 1, width))
         self.p2 = nn.Parameter(scale * torch.randn((16 ) ** 2 + 1, width))
 
         self.trans_list.append(Transformer(512, 3, 16))
         self.trans_list.append(Transformer(512, 4, 16))
-
+        self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         
         
             
         
     def forward(self, feature_maps, promote_list):
         assert len(feature_maps) == len(promote_list)
-        
+
         f_map  = []
         for i, feature_map in enumerate(feature_maps):
             temp = self.conv_list[i](feature_map)
             temp = mtt(temp)
             temp = torch.cat([promote_list[i], temp], dim=1)
-            if i == 1:
+            if i == 0:
                 temp = temp + self.p1
             else:
                 temp = temp + self.p2
@@ -48,6 +48,13 @@ class internal(nn.Module):
             temp = torch.cat([feature_map, temp], dim=1)
             
             f_map.append(temp)
+        
+        m1 = f_map[1][:,512:,...].mean(dim=1, keepdim=True)
+        m2 = f_map[0][:,256:,...].mean(dim=1, keepdim=True)* self.upsample(m1)
+        
+        f_map[0] = f_map[0] * m2
+        f_map[1] = f_map[1] * m1
+        
             
         return f_map 
             
