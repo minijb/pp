@@ -5,6 +5,7 @@ from optimzer import AdamW
 from config import cfg
 from loss import FocalLoss
 from timm.scheduler.cosine_lr import CosineLRScheduler
+from sch import CosineAnnealingWarmupRestarts
 import wandb
 
 
@@ -115,11 +116,14 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
     optimizer = AdamW(model.parameters(), lr  = train_cfg['lr'], eps=1e-4)
     
     scheduler_cfg = train_cfg['scheduler']
-    scheduler = CosineLRScheduler(
-        optimizer= optimizer,
+   # scheduler = CosineLRScheduler(
+    #    optimizer= optimizer,
+    #    **scheduler_cfg
+    #)
+    scheduler = CosineAnnealingWarmupRestarts(
+        optimizer, 
         **scheduler_cfg
     )
-    
     # tracing
     loss_tracing = AverageMeter()
     

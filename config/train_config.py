@@ -12,10 +12,10 @@ trian = {
         "lr" : 0.002,
         "num_step" : num_step,
         "scheduler": {
-            "t_initial": num_step,
-            "lr_min": 0.0001,
-            "warmup_lr_init" : 0.0007,
-            "warmup_t": num_step//4,
+            "first_cycle_steps": num_step,
+            "max_lr": 0.003,
+            "min_lr": 0.0001,
+            "warmup_steps" : int(0.1 * num_step)
         }
     },
     "use_wandb" : True 
