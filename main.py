@@ -139,8 +139,8 @@ def train(feature_exe, item):
     memoryBank = build_memoryBank(device, memory_dataset, 30)
     memoryBank.update(encoder_conv)
    
-    channel_list = [256, 512, 1024]
-    ss_list = [32, 16, 8]
+    channel_list = [128, 256, 512, 1024]
+    ss_list = [64, 32, 16, 8]
     promte_mode = Swin_promte(channel_list, ss_list)
     promte_mode.to(device)
     

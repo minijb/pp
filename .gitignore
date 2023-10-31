@@ -6,3 +6,6 @@ tt*.ipynb
 wandb
 tracing*
 save
+pic
+test*
+*.jpg

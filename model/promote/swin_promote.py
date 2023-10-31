@@ -12,14 +12,14 @@ class Swin_promte(nn.Module):
         
         self.promote_build = nn.ModuleList()
         
-        for i in range(3):
+        for i in range(4):
             self.promote_build.append(
                 liner_prom(channel_list[i], out_size, ss_list[i])
             )        
         
         self.fc_list = nn.ModuleList()
         
-        for i in range(2):
+        for i in range(3):
             self.fc_list.append(
                 Mlp(out_size*2, out_size, out_size, drop=0.2)
             )
@@ -33,9 +33,9 @@ class Swin_promte(nn.Module):
             out = self.promote_build[index](input)
             output_list1.append(out)
         
-        output_list2 = [0,1]
+        output_list2 = [0,1,2]
         
-        for i in range(1,-1,-1):
+        for i in range(2,-1,-1):
             line_cat = torch.cat([ output_list1[i+1],   output_list1[i]], dim= 1)
             output_list2[i] = self.fc_list[i](line_cat)
             
