@@ -76,9 +76,12 @@ class liner_prom(nn.ModuleList):
             )
             internal_size = internal_size//2
             feature_shape = 8
-        else:
+        elif feature_shape == 32:
             self.conv = nn.Conv2d(in_size, internal_size, kernel_size = 4 , stride = 4 , bias =  False)
             feature_shape = feature_shape // 4
+        else:
+            self.conv = nn.Conv2d(in_size, internal_size, kernel_size = 8 , stride = 8 , bias =  False)
+            feature_shape = feature_shape // 8
         
         self.bn =  nn.BatchNorm2d(internal_size)
         
