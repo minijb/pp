@@ -7,5 +7,6 @@ wandb
 tracing*
 save
 pic
-test*
+test*.py
+test*.ipynb
 *.jpg

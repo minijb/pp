@@ -31,7 +31,7 @@ class Swin_decoder(nn.ModuleList):
         self.upconv3 = UpConvBlock(1024, 512)
         self.upconv2 = UpConvBlock(1536, 768)
         self.upconv1 = UpConvBlock(1536, 768)
-        self.upconv0 = UpConvBlock(896, 256)
+        self.upconv0 = UpConvBlock(1408, 256)
         self.upconv = UpConvBlock(384, 64)
 
         self.final_conv = nn.Conv2d(64, 2, kernel_size=3, stride=1, padding=1)
