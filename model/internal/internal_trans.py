@@ -14,9 +14,9 @@ class internal(nn.Module):
             self.conv_list.append(conv_block(channel))
             
         self.trans_list = nn.ModuleList()
-        self.trans_list.append(Transformer(512, 3, 16))
-        self.trans_list.append(Transformer(512, 4, 16))
-        self.trans_list.append(Transformer(512, 5, 16))
+        self.trans_list.append(Transformer(512, 1, 8))
+        self.trans_list.append(Transformer(512, 1, 8))
+        self.trans_list.append(Transformer(512, 1, 8))
 
         
         

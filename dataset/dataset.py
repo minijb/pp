@@ -170,8 +170,10 @@ class MVTecDataset(Dataset):
 
         # invert mask for foreground mask
         target_foreground_mask = -(target_background_mask - 1)
-        
-        return target_foreground_mask
+        if self.target == 'pill':
+            return target_background_mask
+        else:
+            return target_foreground_mask
     
     def generate_perlin_noise_mask(self) -> np.ndarray:
         # define perlin noise scale

@@ -86,9 +86,9 @@ class liner_prom(nn.ModuleList):
         else:
             self.conv = nn.Sequential(
                 nn.Conv2d(in_size, internal_size, kernel_size = 8 , stride = 8 , bias =  False),
-                nn.Conv2d(internal_size, internal_size//2, kernel_size = 3, stride = 1 , padding = 1, bias = False)
+                nn.Conv2d(internal_size, internal_size//8, kernel_size = 3, stride = 1 , padding = 1, bias = False)
             )
-            internal_size = internal_size//2
+            internal_size = internal_size//8
             feature_shape = feature_shape // 8
         
         self.bn =  nn.BatchNorm2d(internal_size)

@@ -183,5 +183,5 @@ if __name__ == "__main__":
 
     
     # pretrained_step()
-    item = 'capsule'
+    item = 'pill'
     train(feature_exe="./checkpoints/swin_encoder.pt", item = item )

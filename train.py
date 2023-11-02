@@ -113,12 +113,15 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
     
     # optimizer
     optimizer = AdamW(model.parameters(), lr  = train_cfg['lr'], eps=1e-4)
+
     
     scheduler_cfg = train_cfg['scheduler']
     scheduler = CosineLRScheduler(
         optimizer= optimizer,
         **scheduler_cfg
     )
+
+    num_training_steps = 20000
     
     # tracing
     loss_tracing = AverageMeter()
@@ -199,7 +202,7 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
 
                     best_score = np.mean(list(eval_metrics.values()))
         
-            if scheduler:
+            if scheduler and step <= 10000:
                 scheduler.step(step+1)
                 
             step += 1

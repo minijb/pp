@@ -9,4 +9,3 @@ from .pretrained_model import *
 from .main_model import *
 from .promote import *
 from .internal import *
-from .test import *
