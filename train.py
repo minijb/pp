@@ -121,7 +121,6 @@ def train_step(model: nn.Module, dataloader, validloader,num_training_steps,log_
         **scheduler_cfg
     )
 
-    num_training_steps = 20000
     
     # tracing
     loss_tracing = AverageMeter()

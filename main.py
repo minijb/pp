@@ -102,7 +102,7 @@ def train(feature_exe, item):
     # build dataset ------------------------------------------
     trian_dataset = build_dataset(
         **dataset_cfg,
-        train=True
+        train=False
     )
     
     memory_dataset = build_dataset(
@@ -183,5 +183,5 @@ if __name__ == "__main__":
 
     
     # pretrained_step()
-    item = 'pill'
+    item = 'transistor'
     train(feature_exe="./checkpoints/swin_encoder.pt", item = item )

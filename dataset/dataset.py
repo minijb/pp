@@ -170,7 +170,7 @@ class MVTecDataset(Dataset):
 
         # invert mask for foreground mask
         target_foreground_mask = -(target_background_mask - 1)
-        if self.target == 'pill':
+        if self.target == 'pill' or self.target == 'toothbrush' or self.target == 'carpet'  :
             return target_background_mask
         else:
             return target_foreground_mask
